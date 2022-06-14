@@ -38,7 +38,7 @@ const log = mongoose.model('log', logSchema)
 const traker = mongoose.model('traker', trakerSchema)
 
 const CreateAndSaveUser = (newUsername, done) => {
-  var newTraker = new traker({ username: newUsername, count: 0 })
+  var newTraker = new traker({ username: newUsername, count: 0, log: [] })
   newTraker.save((err, data) => {
     if (err) return console.log(err)
     done(null, data)
@@ -74,6 +74,7 @@ const addNewExercise = (userId, exercise, done) => {
 const getUserWithDateFilter = (userId, from, to, limit, done) => {
   getUser(userId, (err, data) => {
     if (err) return console.log(err)
+    if(from != null && to != null){
     data.log = data.log
       .filter(item => {
         var logDate = new Date(item.date)
@@ -84,10 +85,10 @@ const getUserWithDateFilter = (userId, from, to, limit, done) => {
           logDate.getTime() <= toDate.getTime()
         )
       })
-      .sort((item1, item2) => {
-        return new Date(item2.date) - new Date(item1.date)
-      })
-      .slice(0, limit)
+    }
+    if(!isNaN(limit)){
+      data.log = data.log.slice(0,limit)
+    }
     done(null, data)
   })
 }
@@ -126,7 +127,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     duration: parseInt(req.body['duration']),
     date: Newdate.toDateString()
   })
-  addNewExercise(req.body['_id'], exercise, (err, data) => {
+  addNewExercise(req.params._id, exercise, (err, data) => {
     if (err) console.log(err)
     res.json({
       _id: data._id,
@@ -140,8 +141,10 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
 app.get('/api/users/:_id/logs', (req, res) => {
   if (Object.keys(req.query).length > 0) {
+    console.log(req.query)
     var { from: from, to: to, limit: limit } = req.query
     limit = parseInt(limit)
+    console.log(from)
     getUserWithDateFilter(req.params._id, from, to, limit, (err, data) => {
       if (err) return console.log(err)
       res.json({
