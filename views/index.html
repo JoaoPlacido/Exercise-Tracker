@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exercise Traker</title>
+  </head>
+  <body>
+    <header>
+      <h1>Exercise Traker</h1>
+    </header>
+    <form action="api/users" method="post">
+      <h3>Create a New User</h3>
+      <input id="username" type="text" name="username" placeholder="username" />
+      <input type="submit" value="submit" />
+    </form>
+    <form id="exercise-form" action="" method="post">
+      <h3>Add exercises</h3>
+      <input id="id" type="text" name="_id" placeholder="_id" />
+      <input
+        id="description"
+        type="text"
+        name="description"
+        placeholder="description*"
+      />
+      <input
+        id="duration"
+        type="text"
+        name="duration"
+        placeholder="duration*"
+      />
+      <input id="date" type="text" name="date" placeholder="date(yyyy-mm-dd)" />
+      <input type="submit" value="submit" />
+    </form>
+  </body>
+  <script>
+    const exerciseForm = document.getElementById('exercise-form')
+    exerciseForm.addEventListener('submit', () => {
+      const userId = document.getElementById('id').value
+      exerciseForm.action = `/api/users/${userId}/exercises`
+      exerciseForm.submit()
+    })
+  </script>
+</html>
